@@ -23,11 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Préparer la requête d'insertion
             $stmt = $conn->prepare("INSERT INTO Utilisateur (username, email, password) VALUES (:username, :email, :password)");
             // Lier les paramètres
-            $stmt->bindParam(':nom', $username);
+            $stmt->bindParam(':username', $username); // Correction ici
             $stmt->bindParam(':email', $email);
             // Hachage du mot de passe pour la sécurité
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt->bindParam(':mot_de_passe', $hashedPassword);
+            $stmt->bindParam(':password', $hashedPassword); // Correction ici
 
             // Exécuter la requête
             $stmt->execute();
@@ -120,4 +120,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </form>
 
   <?php if (!empty($message)): ?>
-    <div class="message"><?= $message
+    <div class="message"><?= $message ?></div>
+  <?php endif; ?>
+</div>
+
+</body>
+</html>
