@@ -46,7 +46,7 @@ body {
     cursor: pointer;
     text-decoration: none;
     padding: 0;
-    font-size: 14px;
+    font-size: 18px;
     transition: text-decoration 0.3s ease;
 }
 
