@@ -1,3 +1,47 @@
+<?php
+// Traitement du formulaire
+$message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = htmlspecialchars(trim($_POST["username"]));
+    $email = htmlspecialchars(trim($_POST["email"]));
+    $password = htmlspecialchars(trim($_POST["password"]));
+    $confirmPassword = htmlspecialchars(trim($_POST["confirm_password"]));
+
+    if (!empty($username) && !empty($email) && !empty($password) && !empty($confirmPassword)) {
+        if ($password === $confirmPassword) {
+            // Connexion à la base de données
+            $servername = "localhost";
+            $dbname = "Projet-Web";
+            $dbusername = "phpmyadmin";
+            $dbpassword = "0550002D";
+
+            try {
+                $conn = new PDO("mysql:host=$servername;dbname=$dbname", $dbusername, $dbpassword);
+                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $stmt = $conn->prepare("INSERT INTO Utilisateur (username, email, password) VALUES (:username, :email, :password)");
+                $stmt->bindParam(':username', $username);
+                $stmt->bindParam(':email', $email);
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $stmt->bindParam(':password', $hashedPassword);
+
+                $stmt->execute();
+                $message = "Inscription réussie pour : <strong>$username</strong>";
+            } catch (PDOException $e) {
+                $message = "Erreur : " . $e->getMessage();
+            }
+
+            $conn = null;
+        } else {
+            $message = "Les mots de passe ne correspondent pas.";
+        }
+    } else {
+        $message = "Veuillez remplir tous les champs.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -18,6 +62,7 @@
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        justify-content: center;
         align-items: center;
     }
     .form-container {
@@ -27,7 +72,6 @@
         box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         width: 300px;
         text-align: center;
-        margin-top: 40px; /* Décalage vers le bas */
         margin-bottom: 2rem;
     }
     h2 {
@@ -52,45 +96,55 @@
     }
     button {
         width: 100%;
-        margin-top: 1rem;
+        margin-top: 1.5rem;
         padding: 10px;
-        background-color: #007bff;
-        color: white;
+        background-color: #a8edea;
+        color: #333;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         cursor: pointer;
         font-weight: 600;
         transition: background-color 0.3s;
     }
     button:hover {
-        background-color: #0056b3;
+        background-color: #91d5d1;
     }
     .message {
         margin-top: 1rem;
-        color: green;
+        color: red;
+        text-align: center;
     }
     .home-button {
-        padding: 12px 50px;
-        background-color: #007bff;
-        color: white;
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 12px 24px;
+        background-color: #a8edea;
+        color: #333;
         text-decoration: none;
         border-radius: 8px;
         font-weight: 600;
         transition: background-color 0.3s;
-        min-width: 180px;
-        text-align: center;
-        margin-bottom: 20px;
     }
     .home-button:hover {
-        background-color: #0056b3;
+        background-color: #91d5d1;
     }
   </style>
+  <script>
+    function validateForm(event) {
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        if (password !== confirm) {
+            alert('Les mots de passe ne correspondent pas.');
+            event.preventDefault();
+        }
+    }
+  </script>
 </head>
 <body>
 
 <div class="form-container">
   <h2>Inscription</h2>
-  <form method="POST" action="">
+  <form method="POST" action="" onsubmit="validateForm(event)">
     <label for="username">Nom d'utilisateur :</label>
     <input type="text" id="username" name="username" required>
 
@@ -112,6 +166,5 @@
 </div>
 
 <a href="index.php" class="home-button">Accueil</a>
-
 </body>
 </html>
