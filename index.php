@@ -175,11 +175,11 @@ footer {
     </nav>
 </div>
 <header>
-<br>
-<br>
-    <h2>Découvrez des Destinations de Voyage<h2>
+    <br><br><br> <!-- Ajout d'espace avant le titre -->
+    <h2>Découvrez des Destinations de Voyage</h2>
     <br>
 </header>
+
 <main>
 <?php
 $destinations = [
