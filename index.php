@@ -35,7 +35,7 @@ body {
     right: 40px;
     display: flex;
     gap: 15px;
-    font-size: 14px;
+    font-size: 25px;
     font-weight: 600;
 }
 
@@ -169,7 +169,6 @@ footer {
 <div class="header-area">
     <h1>Bienvenue sur la page d'accueil</h1>
     <nav class="main-nav">
-        <a href="index.php" class="nav-button">Accueil</a>
         <a href="apropos.php" class="nav-button">À propos</a>
         <a href="formulaire.php" class="nav-button">Contact</a>
         <a href="destination.php" class="nav-button">Destinations</a>
