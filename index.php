@@ -175,8 +175,11 @@ footer {
     </nav>
 </div>
 <header>
-    <br><br><br> <!-- Ajout d'espace avant le titre -->
+    <br><br><br> 
+    <center>
     <h2>Découvrez des Destinations de Voyage</h2>
+    </center>
+    
     <br>
 </header>
 
