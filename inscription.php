@@ -8,8 +8,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = htmlspecialchars(trim($_POST["password"]));
 
     if (!empty($username) && !empty($email) && !empty($password)) {
-        // Ici tu peux ajouter le code pour enregistrer l'utilisateur (ex: en base de données)
-        $message = "Inscription réussie pour : <strong>$username</strong>";
+        // Connexion à la base de données
+        $servername = "localhost"; // Remplacez par votre serveur
+        $dbname = "Projet-Web"; // Nom de votre base de données
+        $dbusername = "phpmyadmin"; // Nom d'utilisateur de la base de données
+        $dbpassword = "0550002D"; // Mot de passe de la base de données
+
+        try {
+            // Créer une connexion
+            $conn = new PDO("mysql:host=$servername;dbname=$dbname", $dbusername, $dbpassword);
+            // Définir le mode d'erreur PDO sur Exception
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Préparer la requête d'insertion
+            $stmt = $conn->prepare("INSERT INTO Utilisateur (username, email, password) VALUES (:username, :email, :password)");
+            // Lier les paramètres
+            $stmt->bindParam(':nom', $username);
+            $stmt->bindParam(':email', $email);
+            // Hachage du mot de passe pour la sécurité
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt->bindParam(':mot_de_passe', $hashedPassword);
+
+            // Exécuter la requête
+            $stmt->execute();
+            $message = "Inscription réussie pour : <strong>$username</strong>";
+        } catch (PDOException $e) {
+            $message = "Erreur : " . $e->getMessage();
+        }
+
+        // Fermer la connexion
+        $conn = null;
     } else {
         $message = "Veuillez remplir tous les champs.";
     }
@@ -92,9 +120,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </form>
 
   <?php if (!empty($message)): ?>
-    <div class="message"><?= $message ?></div>
-  <?php endif; ?>
-</div>
-
-</body>
-</html>
+    <div class="message"><?= $message
