@@ -3,16 +3,16 @@ session_start();
 $pdo = new PDO('mysql:host=localhost;dbname=Projet-Web;charset=utf8', 'root', '');
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     header('Location: login.php');
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
 
 // Récupérer les infos de l'utilisateur
 $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = ?");
-$stmt->execute([$user_id]);
+$stmt->execute([$username]);
 $user = $stmt->fetch();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['pseudo'])) {
         $newPseudo = htmlspecialchars($_POST['pseudo']);
         $stmt = $pdo->prepare("UPDATE utilisateurs SET pseudo = ? WHERE id = ?");
-        $stmt->execute([$newPseudo, $user_id]);
+        $stmt->execute([$newPseudo, $username]);
         $user['pseudo'] = $newPseudo;
     }
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['mot_de_passe'])) {
         $newPassword = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("UPDATE utilisateurs SET mot_de_passe = ? WHERE id = ?");
-        $stmt->execute([$newPassword, $user_id]);
+        $stmt->execute([$newPassword, $username]);
     }
 
     // Upload photo de profil
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (move_uploaded_file($_FILES["photo"]["tmp_name"], $targetFilePath)) {
             $stmt = $pdo->prepare("UPDATE utilisateurs SET photo_profil = ? WHERE id = ?");
-            $stmt->execute([$fileName, $user_id]);
+            $stmt->execute([$fileName, $username]);
             $user['photo_profil'] = $fileName;
         }
     }
