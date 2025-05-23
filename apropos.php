@@ -1,128 +1,169 @@
+<?php
+session_start();
+$user = $_SESSION['username'] ?? null;
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<title>A propos</title>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-    html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        color: #333;
-        padding: 40px 20px;
-        min-height: 100vh;
-        box-sizing: border-box;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>À propos - VoyageZen</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     body {
-        display: flex;
-        flex-direction: column;
-        position: relative;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #333;
+      padding: 40px 20px;
     }
-    /* Top right buttons container */
     .top-right {
-        position: absolute;
-        top: 40px;
-        right: 40px;
-        display: flex;
-        gap: 15px;
-        font-size: 14px;
-        font-weight: 600;
+      position: absolute;
+      top: 40px;
+      right: 40px;
+      display: flex;
+      gap: 15px;
+      font-size: 18px;
+      align-items: center;
     }
     .small-button {
-        background: none;
-        border: none;
-        color: #333;
-        cursor: pointer;
-        text-decoration: none;
-        padding: 0;
-        font-size: 14px;
-        transition: text-decoration 0.3s ease;
+      background: none;
+      border: none;
+      color: #333;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 18px;
     }
     .small-button:hover {
-        text-decoration: underline;
+      text-decoration: underline;
     }
-    /* Content header */
-    .header-area {
-        padding-top: 80px; /* to give space for top right buttons */
-        text-align: center;
-        flex-shrink: 0;
+    .profile-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #ccc;
     }
-    h1 {
-        margin-bottom: 20px;
-        font-weight: 700;
-        color: #333;
+    header {
+      text-align: center;
+      padding-top: 60px;
+      margin-bottom: 30px;
     }
-    /* Navigation container */
-    .main-nav {
-        display: flex;
-        justify-content: center;
-        gap: 25px;
-        flex-wrap: wrap;
-        margin-bottom: 0;
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #333;
     }
-    a.nav-button {
-        background: none;
-        border: none;
-        color: #333;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 18px;
-        cursor: pointer;
-        padding: 8px 20px;
-        border-radius: 0;
-        transition: text-decoration 0.3s ease;
+    nav.main-nav {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 20px;
     }
-    a.nav-button:hover {
-        text-decoration: underline;
+    nav.main-nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      font-size: 18px;
     }
-    /* White background area below navigation */
-    .white-area {
-        background-color: white;
-        color: #333;
-        flex-grow: 1;
-        padding: 40px 30px;
-        box-sizing: border-box;
-        width: 100%;
-        margin-top: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    nav.main-nav a:hover {
+      text-decoration: underline;
     }
-</style>
+    .content {
+      max-width: 900px;
+      margin: 50px auto;
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .content h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #ff6e7f;
+    }
+    .content p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .content ul {
+      margin-left: 20px;
+      list-style-type: "✈️ ";
+      font-size: 1.05rem;
+    }
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
 
 <div class="top-right">
+  <?php if ($user): ?>
+    <a href="compte.php" class="small-button">Mon compte</a>
+    <a href="deconnexion.php" class="small-button">Déconnexion</a>
+  <?php else: ?>
     <a href="inscription.php" class="small-button">Inscription</a>
     <a href="connexion.php" class="small-button">Connexion</a>
+  <?php endif; ?>
 </div>
 
-<div class="header-area">
-    <h1>Bienvenue sur la page d'accueil</h1>
-    <nav class="main-nav">
-        <a href="index.php" class="nav-button">Accueil</a>
-        <a href="apropos.php" class="nav-button">À propos</a>
-        <a href="formulaire.php" class="nav-button">Contact</a>
-        <a href="destination.php" class="nav-button">Destinations</a>
-    </nav>
-</div>
-<div class="white-area">
-   
-    <p>✈️ Agence de Voyage "VoyageZen" Bienvenue sur le dépôt officiel de VoyageZen, une agence de voyage moderne spécialisée dans les séjours personnalisés, les circuits organisés et les expériences authentiques à travers le monde. Ce projet vise à offrir une plateforme simple, rapide et intuitive pour réserver vos prochaines aventures.<br><br><br>
+<header>
+  <h1>À propos de VoyageZen</h1>
+  <nav class="main-nav">
+    <a href="index.php">Accueil</a>
+    <a href="formulaire.php" onclick="<?= $user ? '' : 'alert(\'Vous n\\\'êtes pas connecté.\'); return false;' ?>">Avis</a>
+    <a href="destination.php">Destinations</a>
+  </nav>
+</header>
 
-✈️ À propos VoyageZen est une agence de voyage numérique qui propose :<br><br>
+<main class="content">
+  <h2>Notre mission</h2>
+  <p>
+    Chez <strong>VoyageZen</strong>, nous croyons que voyager devrait être une expérience accessible, sereine et profondément enrichissante.
+    Nous avons créé une plateforme moderne et intuitive pour que chaque voyageur puisse réserver en toute simplicité des aventures
+    authentiques à travers le monde.
+  </p>
 
-✈️ Des réservations de vols, hôtels et activités<br><br>
+  <h2>Ce que nous proposons</h2>
+  <ul>
+    <li>Des réservations de vols, hôtels et activités 100% en ligne</li>
+    <li>Des circuits touristiques personnalisés selon vos goûts</li>
+    <li>Une assistance client disponible 24h/24, 7j/7</li>
+    <li>Des offres exclusives, des promotions de dernière minute</li>
+    <li>Un accompagnement de la planification jusqu’au retour</li>
+  </ul>
 
-✈️ Des circuits touristiques personnalisés<br><br>
+  <h2>Nos valeurs</h2>
+  <p>
+    VoyageZen repose sur trois piliers : <strong>transparence, accessibilité et humanité</strong>. Nous sélectionnons des partenaires de confiance,
+    affichons des prix clairs sans frais cachés, et privilégions les expériences locales.
+  </p>
 
-✈️ Une assistance client 24/7<br><br>
+  <h2>Pourquoi nous choisir ?</h2>
+  <p>
+    Que vous partiez seul, en couple, en famille ou en groupe, notre équipe est là pour concevoir un voyage à votre image. 
+    Grâce à notre technologie et notre réseau mondial, vous profitez des meilleurs prix sans compromis sur la qualité.
+  </p>
 
-✈️ Des offres exclusives et de dernière minute<br><br>
+  <h2>Une plateforme pensée pour vous</h2>
+  <p>
+    Naviguez depuis votre ordinateur ou votre mobile, explorez les destinations, consultez les avis, gérez vos réservations,
+    et accédez à tout moment à votre espace personnel.
+  </p>
+</main>
 
-✈️ Notre objectif est de rendre le voyage accessible, serein et inoubliable.</p>
-</div>
+<footer>
+  &copy; <?= date('Y') ?> VoyageZen - Tous droits réservés
+</footer>
+
 </body>
 </html>
