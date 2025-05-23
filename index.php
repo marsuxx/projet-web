@@ -1,16 +1,24 @@
 <?php
 session_start();
-
-// Connexion à la base de données
 $pdo = new PDO('mysql:host=172.17.0.80;dbname=Projet-Web;charset=utf8', 'phpmyadmin', '0550002D');
 
-// Récupérer l'utilisateur connecté s'il existe
 $user = null;
+$photoSrc = null;
+
 if (isset($_SESSION['username'])) {
     $stmt = $pdo->prepare("SELECT * FROM Utilisateur WHERE username = ?");
     $stmt->execute([$_SESSION['username']]);
     $user = $stmt->fetch();
+
+    if (!empty($user['photo_profil'])) {
+        $photoSrc = filter_var($user['photo_profil'], FILTER_VALIDATE_URL)
+            ? $user['photo_profil']
+            : 'uploads/' . $user['photo_profil'];
+    }
 }
+
+$stmt = $pdo->query("SELECT * FROM Destinations");
+$destinations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -25,22 +33,18 @@ if (isset($_SESSION['username'])) {
             margin: 0;
             padding: 0;
         }
-
         html, body {
-            height: 100%;
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
             color: #333;
+            height: 100%;
             padding: 40px 20px;
-            min-height: 100vh;
         }
-
         body {
             display: flex;
             flex-direction: column;
             position: relative;
         }
-
         .top-right {
             position: absolute;
             top: 40px;
@@ -51,7 +55,6 @@ if (isset($_SESSION['username'])) {
             font-weight: 600;
             align-items: center;
         }
-
         .small-button {
             background: none;
             border: none;
@@ -60,111 +63,86 @@ if (isset($_SESSION['username'])) {
             text-decoration: none;
             padding: 0;
             font-size: 18px;
-            transition: text-decoration 0.3s ease;
         }
-
         .small-button:hover {
             text-decoration: underline;
         }
-
         .profile-image {
-            width: 28px;
-            height: 28px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            vertical-align: middle;
+            border: 1px solid #ccc;
         }
-
         .header-area {
-            padding-top: 80px;
             text-align: center;
-            flex-shrink: 0;
+            padding-top: 80px;
         }
-
         h1 {
             margin-bottom: 20px;
             font-weight: 700;
-            color: #333;
         }
-
         .main-nav {
             display: flex;
             justify-content: center;
             gap: 25px;
             flex-wrap: wrap;
-            margin-bottom: 0;
         }
-
         a.nav-button {
-            background: none;
-            border: none;
-            color: #333;
             text-decoration: none;
+            color: #333;
             font-weight: 600;
             font-size: 18px;
-            cursor: pointer;
-            padding: 8px 20px;
-            border-radius: 0;
-            transition: text-decoration 0.3s ease;
         }
-
         a.nav-button:hover {
             text-decoration: underline;
         }
 
-        .white-area {
+        .carousel-container {
+            max-width: 600px;
+            margin: 50px auto;
+            position: relative;
+            overflow: hidden;
             background-color: white;
-            color: #333;
-            flex-grow: 1;
-            padding: 40px 30px;
-            width: 100%;
-            margin-top: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .destinations {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
+        .carousel-track {
+            display: flex;
+            transition: transform 0.6s ease-in-out;
         }
 
         .destination-card {
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            padding: 25px 30px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: default;
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 30px;
+            text-align: center;
         }
 
-        .destination-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        .destination-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
 
         .destination-title {
             font-size: 1.8rem;
             font-weight: 600;
-            color: #34495e;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
+            margin-bottom: 10px;
         }
 
         .destination-country {
             font-size: 1.1rem;
-            font-weight: 300;
-            color: #7f8c8d;
             font-style: italic;
+            color: #888;
         }
 
         .destination-desc {
             margin-top: 15px;
             font-size: 1.1rem;
-            line-height: 1.5;
             color: #555;
         }
 
@@ -180,14 +158,14 @@ if (isset($_SESSION['username'])) {
 
 <div class="top-right">
     <?php if ($user): ?>
-        <a href="compte.php" class="small-button" title="Mon compte">
-            <?php if (!empty($user['photo_profil'])): ?>
-                <img src="uploads/<?= htmlspecialchars($user['photo_profil']) ?>" alt="Profil" class="profile-image">
+        <a href="compte.php" class="small-button" title="Voir mon profil">
+            <?php if (!empty($photoSrc)): ?>
+                <img src="<?= htmlspecialchars($photoSrc) ?>" alt="Profil" class="profile-image">
             <?php else: ?>
-                👤
+                ðŸ‘¤
             <?php endif; ?>
         </a>
-        <a href="deconnexion.php" class="small-button">Déconnexion</a>
+        <a href="deconnexion.php" class="small-button">DÃ©connexion</a>
     <?php else: ?>
         <a href="inscription.php" class="small-button">Inscription</a>
         <a href="connexion.php" class="small-button">Connexion</a>
@@ -197,87 +175,52 @@ if (isset($_SESSION['username'])) {
 <div class="header-area">
     <h1>Bienvenue sur la page d'accueil</h1>
     <nav class="main-nav">
-        <a href="apropos.php" class="nav-button">À propos</a>
-        <a href="formulaire.php" class="nav-button">Contact</a>
+        <a href="apropos.php" class="nav-button">Ã€ propos</a>
+        <a href="<?= $user ? 'formulaire.php' : '#' ?>" 
+           class="nav-button" 
+           onclick="<?= $user ? '' : 'alert(\'Vous n\'Ãªtes pas connectÃ©.\'); return false;' ?>">Avis</a>
         <a href="destination.php" class="nav-button">Destinations</a>
+        <a href="contact.php" class="nav-button">Contact</a>
     </nav>
 </div>
 
 <header>
     <br><br><br>
-    <center>
-        <h2>Découvrez des Destinations de Voyage</h2>
-    </center>
+    <center><h2>DÃ©couvrez des Destinations de Voyage</h2></center>
     <br>
 </header>
 
 <main>
-<?php
-$destinations = [
-    [
-        "city" => "Paris",
-        "country" => "France",
-        "description" => "Ville romantique célèbre pour la Tour Eiffel et ses musées."
-    ],
-    [
-        "city" => "Tokyo",
-        "country" => "Japon",
-        "description" => "Capitale ultra-moderne mêlée de traditions, temples et technologies."
-    ],
-    [
-        "city" => "New York",
-        "country" => "États-Unis",
-        "description" => "Ville qui ne dort jamais, connue pour Times Square et Central Park."
-    ],
-    [
-        "city" => "Le Caire",
-        "country" => "Égypte",
-        "description" => "Ville historique au bord du Nil, proche des pyramides de Gizeh."
-    ],
-    [
-        "city" => "Barcelone",
-        "country" => "Espagne",
-        "description" => "Ville ensoleillée connue pour Gaudí, les plages et la vie nocturne."
-    ],
-    [
-        "city" => "Vancouver",
-        "country" => "Canada",
-        "description" => "Ville entourée de montagnes et d'océans, idéale pour les activités de plein air."
-    ],
-    [
-        "city" => "Moscou",
-        "country" => "Russie",
-        "description" => "Capitale historique avec la Place Rouge et le Kremlin."
-    ],
-    [
-        "city" => "Pékin",
-        "country" => "Chine",
-        "description" => "Ville impériale connue pour la Cité interdite et la Grande Muraille."
-    ],
-    [
-        "city" => "Rome",
-        "country" => "Italie",
-        "description" => "Ville antique regorgeant de monuments historiques comme le Colisée."
-    ]
-];
-?>
-
-<div class="destinations">
-    <?php foreach ($destinations as $dest): ?>
-        <article class="destination-card">
-            <div class="destination-title">
-                <span><?= htmlspecialchars($dest['city']) ?></span>
-                <span class="destination-country"><?= htmlspecialchars($dest['country']) ?></span>
-            </div>
-            <p class="destination-desc"><?= htmlspecialchars($dest['description']) ?></p>
-        </article>
-    <?php endforeach; ?>
-</div>
+    <div class="carousel-container">
+        <div class="carousel-track" id="carousel-track">
+            <?php foreach ($destinations as $dest): ?>
+                <div class="destination-card">
+                    <?php if (!empty($dest['image_url'])): ?>
+                        <img src="<?= htmlspecialchars($dest['image_url']) ?>" alt="<?= htmlspecialchars($dest['nom']) ?>">
+                    <?php endif; ?>
+                    <div class="destination-title"><?= htmlspecialchars($dest['nom']) ?></div>
+                    <div class="destination-country"><?= htmlspecialchars($dest['pays']) ?></div>
+                    <div class="destination-desc"><?= htmlspecialchars($dest['description']) ?></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
 </main>
 
 <footer>
-    &copy; <?= date('Y') ?> Site de Voyage - Tous droits réservés
+    &copy; <?= date('Y') ?> Site de Voyage - Tous droits rÃ©servÃ©s
 </footer>
+
+<script>
+    const track = document.getElementById('carousel-track');
+    const slides = document.querySelectorAll('.destination-card');
+    let index = 0;
+
+    setInterval(() => {
+        index = (index + 1) % slides.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+    }, 10000); // 10 secondes
+</script>
+
 </body>
 </html>
-
